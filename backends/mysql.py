@@ -1,5 +1,6 @@
 from .default import Backend
 import mysql.connector
+from chartgraph import Graph
 
 class Mysql_backend(Backend):
     def __init__(self, OPTIONS):
@@ -16,15 +17,18 @@ class Mysql_backend(Backend):
         )
         self.schema = Schema()
 
-    def topn_graph(self):
+    def topn_graph(self, field):
         db = self.db
-        FLOWS_PER_IP = self.schema.topn("dst_ip")
+        FLOWS_PER_IP = self.schema.topn(field)
 
         cursor = db.cursor()
         cursor.execute("USE testgoflow")
         cursor.execute(FLOWS_PER_IP)
         r = cursor.fetchall()
-        return r
+        g = Graph()
+        g.name = "topn_{0}".format(field)
+        g.graph_from_rows(r, 0)
+        return g
 
 
 class Column:
@@ -68,6 +72,7 @@ class Schema:
             "dst_ip": IP4Column("dst_ip"),
             "dst_port": Column("dst_port")
         }
+
         # Supported queries
         self.QUERIES = {
             "TOPN": self.topn
