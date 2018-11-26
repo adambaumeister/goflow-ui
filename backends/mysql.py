@@ -30,6 +30,19 @@ class Mysql_backend(Backend):
         g.graph_from_rows(r, 0)
         return g
 
+    def topn_sum_graph(self, field, sum_by):
+        db = self.db
+        FLOWS_PER_IP = self.schema.topn_sum(field, sum_by)
+
+        cursor = db.cursor()
+        cursor.execute("USE testgoflow")
+        cursor.execute(FLOWS_PER_IP)
+        r = cursor.fetchall()
+        g = Graph()
+        g.name = "topn_{0}".format(field)
+        g.graph_from_rows(r, 0)
+        return g
+
 
 class Column:
     """
@@ -62,7 +75,7 @@ class Schema:
     """
     def __init__(self):
         # Default
-        self.limit = 50
+        self.limit = 10
 
         # Columns
         self.columns = {
@@ -70,7 +83,8 @@ class Schema:
             "src_ip": IP4Column("src_ip"),
             "src_port": Column("src_port"),
             "dst_ip": IP4Column("dst_ip"),
-            "dst_port": Column("dst_port")
+            "dst_port": Column("dst_port"),
+            "in_bytes": Column("in_bytes"),
         }
 
         # Supported queries
@@ -79,9 +93,16 @@ class Schema:
         }
 
     def topn(self, column):
+        count = "last_switched"
         q = """
-        SELECT {0}, count(last_switched) last_switched FROM goflow_records group by {0}
-        """.format(self.columns[column].select())
+        SELECT {0}, count({1}) AS c FROM goflow_records GROUP BY {0} ORDER BY c DESC
+        """.format(self.columns[column].select(), count)
+        return self.query_boilerplate(q)
+
+    def topn_sum(self, column, sum_by):
+        q = """
+        SELECT {0}, sum({1}) AS c FROM goflow_records GROUP BY {0} ORDER BY c DESC
+        """.format(self.columns[column].select(), sum_by)
         return self.query_boilerplate(q)
 
     def query_boilerplate(self, q):

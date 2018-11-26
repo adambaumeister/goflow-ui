@@ -18,9 +18,17 @@ b = backends.get("mysql", OPTIONS=options)
 app = Flask(__name__)
 
 @app.route('/topn')
-def test():
+def topn():
     field = request.args['f']
+
     g = b.topn_graph(field)
     chart = g.render()
-    print(g.name)
+    return render_template("test.html", chart=chart, chartname=g.name)
+
+@app.route('/topn_sum')
+def topn_sum():
+    field = request.args['f']
+    sum = request.args['sum']
+    g = b.topn_sum_graph(field, sum)
+    chart = g.render()
     return render_template("test.html", chart=chart, chartname=g.name)

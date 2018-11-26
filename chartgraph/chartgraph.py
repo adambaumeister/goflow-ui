@@ -10,10 +10,7 @@ class Graph:
         for row in rows:
             labels.append('"{0}"'.format(row[label_index]))
             for col in row[label_index+1:]:
-                if type(col) is int:
-                    data.append(str(col))
-                else:
-                    data.append(col)
+                data.append(str(col))
 
         self.labels = ", ".join(labels)
         self.data = ", ".join(data)
