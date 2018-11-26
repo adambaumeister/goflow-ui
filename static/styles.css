@@ -2,3 +2,40 @@
     width: 1000px;
     height:600px
 }
+
+.title {
+    font-size: 50px;
+    color: white;
+    padding: 10px;
+}
+
+.main-header {
+    min-height: 100px;
+    background-color: #fff572;
+    font-family: 'Baloo';
+}
+.main-nav {
+    min-height: 60px;
+    background-color: #cac7a2;
+    box-shadow: -4px 3px 11px 0px #969696
+}
+
+.nav-button {
+    margin: 10px;
+    padding: 5px;
+    display: inline-block;
+    border-radius: 50px;
+    border: 3px solid white;
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s ease 0s;
+}
+.nav-button:hover {
+    background-color: white;
+    color: #cac7a2;
+}
+
+body {
+    font-family: 'Baloo';
+    margin: 0px;
+}
