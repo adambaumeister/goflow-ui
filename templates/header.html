@@ -5,5 +5,9 @@
 </head>
 <div class="main-header"><div class="title">Goflow-ui</div></div>
 <div class="main-nav">
-    <a href="/topn?f=dst_ip" class="nav-button">Top N Graphs</a>
+    <div class="nav-container">
+    {% for nav in nav_buttons %}
+    <a href="{{ nav.href }}" class="nav-button">{{ nav.name }}</a>
+    {% endfor %}
+    </div>
 </div>

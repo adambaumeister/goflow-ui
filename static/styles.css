@@ -19,6 +19,9 @@
     background-color: #cac7a2;
     box-shadow: -4px 3px 11px 0px #969696
 }
+.nav-container {
+    margin-left: 45%;
+}
 
 .nav-button {
     margin: 10px;
@@ -34,6 +37,7 @@
     background-color: white;
     color: #cac7a2;
 }
+
 
 body {
     font-family: 'Baloo';
