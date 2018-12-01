@@ -18,7 +18,7 @@ b = backends.get("mysql", OPTIONS=options)
 app = Flask(__name__)
 p = Page(header_template="header.html", body_template="test.html", footer_template="footer.html")
 p.add_nav_button("/topn?f=dst_ip", "Graphs")
-p.add_nav_button("/topn?f=dst_ip&sum=bytes", "Graph Sum")
+p.add_nav_button("/topn_sum?f=dst_ip&sum=bytes", "Graph Sum")
 
 
 @app.route('/topn')
