@@ -1,0 +1,25 @@
+<div class="chart-container">
+    <form action="/topn" method="get">
+        <ul class="form-list">
+            <li><label>Graph top</label>
+                <input class="form-box" type="text" name="max" value="10">
+            </li>
+            <li><label>Of Type</label>
+                <select class="form-box" name="f">
+                    {% for col, display_name in forms.select.items() %}
+                    <option value="{{ col }}">{{ display_name }}</option>
+                    {% endfor %}
+                </select>
+            </li>
+            <li>
+                <input type="submit" value="submit">
+            </li>
+        </ul>
+    </form>
+    <canvas id="{{ chartname }}"></canvas>
+</div>
+
+<script>
+{{ chart|safe }}
+</script>
+

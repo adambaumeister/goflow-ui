@@ -36,3 +36,11 @@ class NavButton:
     def __init__(self, href, name):
         self.href = href
         self.name = name
+
+class Form:
+    def __init__(self):
+        self.inputs = []
+
+class Input:
+    def __init__(self, name):
+        self.name = name
