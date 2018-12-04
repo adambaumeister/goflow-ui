@@ -33,11 +33,13 @@ def topn():
     :return: HTML
     """
     p = page_setup("graph.html")
+
     f = p.register_form()
     topn_max = f.register_input("max", "int")
     field = f.register_input("f", "text")
     topn_max.default = 10
     f.parse(request.args)
+
     g = b.topn_graph(field.value, topn_max.value)
 
     chart = g.render()
@@ -51,10 +53,22 @@ def topn():
 
 @app.route('/topn_sum')
 def topn_sum():
-    p = page_setup()
-    field = request.args['f']
-    sum = request.args['sum']
+    p = page_setup("sum_graph.html")
+
+    f = p.register_form()
+    topn_max = f.register_input("max", "int")
+    field = f.register_input("f", "text")
+    sum = f.register_input("sum", "text")
+    topn_max.default = 10
+    f.parse(request.args)
+    field = field.value
+    sum = sum.value
+
     g = b.topn_sum_graph(field, sum)
     chart = g.render()
+    form = {
+        "select": b.get_columns(),
+        "current": f.inputs,
+    }
 
-    return p.render_page(chart=chart, chartname=g.name)
+    return p.render_page(chart=chart, chartname=g.name, forms=form)
