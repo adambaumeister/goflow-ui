@@ -68,6 +68,7 @@ def topn_sum():
     chart = g.render()
     form = {
         "select": b.get_columns(),
+        "sum_select": b.get_int_columns(),
         "current": f.inputs,
     }
 

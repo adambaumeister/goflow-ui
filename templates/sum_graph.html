@@ -17,7 +17,7 @@
             </li>
             <li><label>by sum</label>
                 <select class="form-box" name="sum">
-                    {% for col, display_name in forms.select.items() %}
+                    {% for col, display_name in forms.sum_select.items() %}
                     {% if forms.current.f.value == col %}
                     <option value="{{ col }}" selected>{{ display_name }}</option>
                     {% else %}
