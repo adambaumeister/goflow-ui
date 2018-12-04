@@ -2,12 +2,16 @@
     <form action="/topn" method="get">
         <ul class="form-list">
             <li><label>Graph top</label>
-                <input class="form-box" type="text" name="max" value="10">
+                <input class="form-box" type="text" name="max" value="{{ forms.current.max.value }}">
             </li>
-            <li><label>Of Type</label>
+            <li><label>Flow count by</label>
                 <select class="form-box" name="f">
                     {% for col, display_name in forms.select.items() %}
+                    {% if forms.current.f.value == col %}
+                    <option value="{{ col }}" selected>{{ display_name }}</option>
+                    {% else %}
                     <option value="{{ col }}">{{ display_name }}</option>
+                    {% endif %}
                     {% endfor %}
                 </select>
             </li>

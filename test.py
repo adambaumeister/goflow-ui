@@ -1,7 +1,6 @@
 
 import os
 from flask import Flask
-from flask import render_template
 from flask import request
 from backends import Backend
 from pages import Page
@@ -22,20 +21,29 @@ b = backends.get("mysql", OPTIONS=options)
 
 def page_setup(template="test.html"):
     p = Page(header_template="header.html", body_template=template, footer_template="footer.html")
-    p.add_nav_button("/topn?f=dst_ip", "Graphs")
-    p.add_nav_button("/topn_sum?f=dst_ip&sum=in_bytes", "Graph Sum")
+    p.add_nav_button("/topn?f=dst_ip", "Graph by Flows")
+    p.add_nav_button("/topn_sum?f=dst_ip&sum=in_bytes", "Graph by Sum")
     return p
 
 
 @app.route('/topn')
 def topn():
+    """
+    Topn graph is the top N results for query based on amount of flows
+    :return: HTML
+    """
     p = page_setup("graph.html")
-    field = request.args['f']
+    f = p.register_form()
+    topn_max = f.register_input("max", "int")
+    field = f.register_input("f", "text")
+    topn_max.default = 10
+    f.parse(request.args)
+    g = b.topn_graph(field.value, topn_max.value)
 
-    g = b.topn_graph(field)
     chart = g.render()
     form = {
         "select": b.get_columns(),
+        "current": f.inputs,
     }
 
     return p.render_page(chart=chart, chartname=g.name, forms=form)

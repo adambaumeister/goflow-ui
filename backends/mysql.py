@@ -20,8 +20,9 @@ class Mysql_backend(Backend):
     def get_columns(self):
         return self.schema.get_columns()
 
-    def topn_graph(self, field):
+    def topn_graph(self, field, limit=10):
         db = self.db
+        self.schema.limit = limit
         FLOWS_PER_IP = self.schema.topn(field)
 
         cursor = db.cursor()
@@ -33,8 +34,9 @@ class Mysql_backend(Backend):
         g.graph_from_rows(r, 0)
         return g
 
-    def topn_sum_graph(self, field, sum_by):
+    def topn_sum_graph(self, field, sum_by, limit=10):
         db = self.db
+        self.schema.limit = limit
         FLOWS_PER_IP = self.schema.topn_sum(field, sum_by)
 
         cursor = db.cursor()
