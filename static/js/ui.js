@@ -1,0 +1,4 @@
+
+$('#picker').dateTimePicker({
+  showTime: true
+});
