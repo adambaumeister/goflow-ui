@@ -1,3 +1,4 @@
 $(document).ready( function () {
-    $('#picker').dateTimePicker();
+    $('#start-picker').dateTimePicker();
+    $('#end-picker').dateTimePicker();
 })

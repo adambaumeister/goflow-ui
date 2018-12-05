@@ -12,10 +12,12 @@
 <div class="main-header"><div class="title">Goflow-ui</div></div>
 <div class="main-nav">
     <div class="nav-container">
-    {% for nav in nav_buttons %}
-    <a href="{{ nav.href }}" class="nav-button">{{ nav.name }}</a>
-    {% endfor %}
-    <div id="picker"></div>
-    <input type="hidden" id="result" value="">
+        {% for nav in nav_buttons %}
+        <a href="{{ nav.href }}" class="nav-button">{{ nav.name }}</a>
+        {% endfor %}
+        <div id="start-picker" class="time"></div>
+        <input type="hidden" id="start-time" class="time" value="">
+        <div id="end-picker" class="time"></div>
+        <input type="hidden" id="end-time" value="">
     </div>
 </div>

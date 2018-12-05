@@ -45,7 +45,7 @@ li {
 .main-nav {
     min-height: 60px;
     background-color: white;
-    box-shadow: -4px 3px 11px 0px #969696
+    box-shadow: -4px 3px 11px 0px #969696;
 }
 .nav-container {
     margin: 0 auto;
@@ -64,6 +64,14 @@ li {
 .nav-button:hover {
     background-color: white;
     color: #b5b5b5;
+}
+
+.time-container {
+    display: inline;
+}
+
+.time {
+    display: inline
 }
 
 body {
