@@ -11,6 +11,7 @@
     border: 1px solid #BEBEBE;
     padding: 7px;
     margin: 0px;
+    -webkit-appearance:none;
     -webkit-transition: all 0.30s ease-in-out;
 	-moz-transition: all 0.30s ease-in-out;
 	-ms-transition: all 0.30s ease-in-out;
@@ -36,7 +37,15 @@ li {
     color: white;
     padding: 10px;
 }
-
+.time-buttons {
+    text-align: right;
+    width: 50%;
+    float: right;
+}
+.nav-buttons {
+    width: 50%;
+    float: left;
+}
 .main-header {
     min-height: 100px;
     background-color: #5893bd;
@@ -71,7 +80,12 @@ li {
 }
 
 .time {
-    display: inline
+    display: inline;
+    margin: 10px;
+    padding: 5px;
+    display: inline-block;
+    border-radius: 50px;
+    border: 3px solid white;
 }
 
 body {
