@@ -1,4 +1,3 @@
-
-$('#picker').dateTimePicker({
-  showTime: true
-});
+$(document).ready( function () {
+    $('#picker').dateTimePicker();
+})
