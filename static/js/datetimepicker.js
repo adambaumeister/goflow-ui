@@ -177,10 +177,10 @@
                 }
 
                 function prevMonth() {
-                    if (totalMonths(selectDate) > totalMonths(startDate)) {
-                        selectDate.add(-1, 'month');
-                        feelDates(selectDate);
-                    }
+                    //if (totalMonths(selectDate) > totalMonths(startDate)) {
+                    selectDate.add(-1, 'month');
+                    feelDates(selectDate);
+                    //}
                 }
 
                 function attachChangeTime() {

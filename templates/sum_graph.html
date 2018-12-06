@@ -1,5 +1,5 @@
 <div class="chart-container">
-    <form action="/topn_sum" method="get">
+    <form id="select-form" action="" method="get">
         <ul class="form-list">
             <li><label>Graph top</label>
                 <input class="form-box" type="text" name="max" value="{{ forms.current.max.value }}">
@@ -27,7 +27,7 @@
                 </select>
             </li>
             <li>
-                <input type="submit" value="submit" class="nav-button">
+                <input id="submitter" type="submit" value="submit" class="nav-button">
             </li>
         </ul>
     </form>

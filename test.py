@@ -59,11 +59,13 @@ def topn_sum():
     topn_max = f.register_input("max", "int")
     field = f.register_input("f", "text")
     sum = f.register_input("sum", "text")
+    start_time = f.register_input("start-time", "text")
     topn_max.default = 10
     f.parse(request.args)
     field = field.value
     sum = sum.value
 
+    print(start_time.value)
     g = b.topn_sum_graph(field, sum)
     chart = g.render()
     form = {
