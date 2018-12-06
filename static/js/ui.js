@@ -1,12 +1,13 @@
 $(document).ready( function () {
     $('#start-picker').dateTimePicker({
-        positionShift: { top: 20, left: 400}
+        positionShift: { top: 20, left: 400},
     });
     $('#end-picker').dateTimePicker({
         positionShift: { top: 20, left: 500}
     });
 
     $('#select-form').submit( function(eventObj) {
-        $("#start-time").appendTo(this);
+        $("#select-form").append( "<input type='hidden' name='start-time' value='" + $("#start-time").val() + "'>");
+        return true;
     });
 })
