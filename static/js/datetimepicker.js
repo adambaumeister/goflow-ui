@@ -17,9 +17,12 @@
         var mousedown = false;
         var timeout = 800;
         var selectDate = settings.selectData == "now" ? moment() : moment(settings.selectData, settings.dateFormat);
+        /*
+        Allow selectdate to be in the paaast
         if (selectDate < moment()) {
             selectDate = moment();
         }
+        */
         var startDate = copyDate(moment());
         var lastSelected = copyDate(selectDate);
         return this.each(function () {
@@ -106,10 +109,7 @@
                             if (m.month() == selectedMonth.month() && m.weekday() == j) {
                                 var day = parseInt(m.format('D'));
                                 $b.text(day);
-                                if (flagStart && day < dayNow) {
-                                    $b.addClass('dtp_modal-grey');
-                                }
-                                else if (flagSelect && day == cerDay) {
+                                if (flagSelect && day == cerDay) {
                                     $b.addClass('dtp_modal-cell-selected');
                                 }
                                 else {
