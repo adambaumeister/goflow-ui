@@ -54,13 +54,13 @@ class Mysql_backend(Backend):
         db = self.db
         self.schema.limit = limit
         FLOWS_PER_IP = self.schema.topn_sum(field, sum_by)
-        print(FLOWS_PER_IP)
+
         cursor = db.cursor()
         cursor.execute("USE testgoflow")
         cursor.execute(FLOWS_PER_IP)
         r = cursor.fetchall()
         g = Graph()
-        g.name = "topn_{0}".format(field)
+        g.name = "TopN {0}".format(field)
         g.graph_from_rows(r, 0)
         return g
 

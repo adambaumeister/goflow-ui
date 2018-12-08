@@ -1,7 +1,19 @@
 .chart-container {
     width: 1000px;
-    height:600px;
+    height:700px;
     margin: 0 auto;
+}
+
+table {
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #dadada;
+    border-radius: 20px;
+}
+
+td {
+    padding: 20px;
 }
 
 .form-box {

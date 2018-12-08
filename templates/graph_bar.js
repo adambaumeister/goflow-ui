@@ -1,3 +1,4 @@
+<script>
 var ctx = document.getElementById('{{ c.name }}').getContext('2d');
 var chart = new Chart(ctx, {
     // The type of chart we want to create
@@ -27,3 +28,4 @@ var chart = new Chart(ctx, {
         }
     }
 });
+</script>
