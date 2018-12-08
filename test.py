@@ -2,7 +2,7 @@
 import os
 from flask import Flask
 from flask import request
-from backends import Backend
+from backends import Backend, TimeFilter
 from pages import Page
 
 app = Flask(__name__)
@@ -17,7 +17,6 @@ options = {
     "db": "testgoflow"
 }
 b = backends.get("mysql", OPTIONS=options)
-
 
 def page_setup(template="test.html"):
     p = Page(header_template="header.html", body_template=template, footer_template="footer.html")
@@ -34,11 +33,16 @@ def topn():
     """
     p = page_setup("graph.html")
 
+    # Form setup for this page
     f = p.register_form()
     topn_max = f.register_input("max", "int")
     field = f.register_input("f", "text")
+    start_time = f.register_input("start-time", "text")
+    end_time = f.register_input("end-time", "text")
     topn_max.default = 10
     f.parse(request.args)
+    b.add_filter(op=">", value=start_time.value)
+    b.add_filter(op="<", value=end_time.value)
 
     g = b.topn_graph(field.value, topn_max.value)
 
@@ -66,6 +70,8 @@ def topn_sum():
     f.parse(request.args)
     field = field.value
     sum = sum.value
+    b.add_filter(op=">", value=start_time.value)
+    b.add_filter(op="<", value=end_time.value)
 
     g = b.topn_sum_graph(field, sum)
     chart = g.render()

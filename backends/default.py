@@ -1,5 +1,5 @@
 import backends
-import mysql.connector
+
 class Backend():
     def __init__(self):
         self.required_opts = []

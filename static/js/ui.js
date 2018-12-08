@@ -4,7 +4,7 @@ $(document).ready( function () {
     var endTime = $.getUrlVar('end-time');
 
     if ( startTime == undefined ) {
-        startTime = "now"
+        startTime = "1970-01-01 00:00"
     } else {
         startTime = decodeURIComponent($.getUrlVar('start-time'));
         // Forward populate input field if not empty
@@ -37,6 +37,7 @@ $(document).ready( function () {
 
         return true;
     });
+
 })
 
 
