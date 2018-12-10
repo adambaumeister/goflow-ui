@@ -10,6 +10,7 @@ table {
     margin-right: auto;
     border: 1px solid #dadada;
     border-radius: 20px;
+    width: 1000px;
 }
 
 td {
@@ -36,6 +37,13 @@ td {
 	box-shadow: 0 0 8px #5893bd;
 	border: 1px solid #5893bd;
 }
+
+.form-container {
+    width:100%;
+    text-align: center;
+
+}
+
 label {
     padding: 0 5;
 }
@@ -70,6 +78,10 @@ li {
 }
 .nav-container {
     margin: 0 auto;
+}
+
+.table-container {
+    text-align: center;
 }
 
 .nav-button {

@@ -38,6 +38,9 @@ $(document).ready( function () {
         return true;
     });
 
+    $('#flow-table').hpaging({
+        "limit": 10
+    });
 })
 
 

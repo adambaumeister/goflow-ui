@@ -1,6 +1,6 @@
 from .default import Backend
 import mysql.connector
-from chartgraph import Graph
+from chartgraph import Graph, Table
 import re
 
 class Mysql_backend(Backend):
@@ -36,6 +36,19 @@ class Mysql_backend(Backend):
     def get_int_columns(self):
         return self.schema.get_int_columns()
 
+    def flow_table(self, limit=10):
+        db = self.db
+        self.schema.limit = limit
+        FLOWS = self.schema.flows()
+
+        cursor = db.cursor()
+        cursor.execute("USE testgoflow")
+        cursor.execute(FLOWS)
+        r = cursor.fetchall()
+        t = Table()
+        t = t.table_from_rows(r, self.schema.column_order)
+        return t
+
     def topn_graph(self, field, limit=10):
         db = self.db
         self.schema.limit = limit
@@ -47,6 +60,10 @@ class Mysql_backend(Backend):
         r = cursor.fetchall()
         g = Graph()
         g.name = "topn_{0}".format(field)
+        g.set_headers([
+            field,
+            "Total"
+        ])
         g.graph_from_rows(r, 0)
         return g
 
@@ -61,6 +78,10 @@ class Mysql_backend(Backend):
         r = cursor.fetchall()
         g = Graph()
         g.name = "TopN {0}".format(field)
+        g.set_headers([
+            field,
+            "Total"
+        ])
         g.graph_from_rows(r, 0)
         return g
 
@@ -117,6 +138,15 @@ class Schema:
     def __init__(self):
         # Default
         self.limit = 10
+
+        self.column_order = [
+            "last_switched",
+            "src_ip",
+            "src_port",
+            "dst_ip",
+            "dst_port",
+            "in_bytes",
+        ]
 
         # Columns
         self.columns = {
@@ -176,6 +206,15 @@ class Schema:
         q = """
         SELECT {0}, sum({1}) AS c FROM goflow_records {2} GROUP BY {0} ORDER BY c DESC
         """.format(self.columns[column].select(), sum_by, self.build_filter_string())
+        return self.query_boilerplate(q)
+
+    def flows(self):
+        c = []
+        for col in self.column_order:
+            c.append(self.columns[col].select())
+        q = """
+        SELECT {1} FROM goflow_records {0} ORDER BY last_switched DESC
+        """.format(self.build_filter_string(), ", ".join(c))
         return self.query_boilerplate(q)
 
     def query_boilerplate(self, q):

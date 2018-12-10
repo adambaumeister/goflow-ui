@@ -5,11 +5,15 @@ class Graph:
         self.name = ''
         self.table = Table()
         self.table_data = ''
+        self.headers = []
+
+    def set_headers(self, headers):
+        self.headers = headers
 
     def graph_from_rows(self, rows, label_index=0):
         labels = []
         data = []
-        self.table_data = self.table.table_from_rows(rows)
+        self.table_data = self.table.table_from_rows(rows, self.headers)
         for row in rows:
             labels.append('"{0}"'.format(row[label_index]))
             for col in row[label_index+1:]:
@@ -26,5 +30,9 @@ class Table:
     def __init__(self):
         self.name = ''
 
-    def table_from_rows(self, rows):
-        return render_template("table.html", rows=rows)
+    def table_from_rows(self, rows, headers=None):
+        r = []
+        if headers:
+            r.append(headers)
+        r = r + rows
+        return render_template("table.html", rows=r)

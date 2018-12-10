@@ -22,7 +22,30 @@ def page_setup(template="test.html"):
     p = Page(header_template="header.html", body_template=template, footer_template="footer.html")
     p.add_nav_button("/topn?f=dst_ip", "Graph by Flows")
     p.add_nav_button("/topn_sum?f=dst_ip&sum=in_bytes", "Graph by Sum")
+    p.add_nav_button("/flow", "Flows")
     return p
+
+@app.route('/flow')
+def flow_search():
+    p = page_setup("flow_table.html")
+
+    # Form setup for this page
+    f = p.register_form()
+    topn_max = f.register_input("max", "int")
+    start_time = f.register_input("start-time", "text")
+    end_time = f.register_input("end-time", "text")
+    topn_max.default = 10
+    f.parse(request.args)
+    b.add_filter(op=">", value=start_time.value)
+    b.add_filter(op="<", value=end_time.value)
+
+    t = b.flow_table(topn_max.value)
+
+    form = {
+        "current": f.inputs
+    }
+
+    return p.render_page(table=t, forms=form)
 
 
 @app.route('/topn')
