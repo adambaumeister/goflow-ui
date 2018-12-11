@@ -1,4 +1,5 @@
-from backends import Backend, FilterString
+from backends import Schema
 
-f = FilterString(value="src 127.0.0.1 dst 1.1.1.1")
-print(f.strings)
+s = Schema()
+s.add_filter("src 127.0.0.1")
+print(s.build_filter_string())

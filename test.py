@@ -2,7 +2,7 @@
 import os
 from flask import Flask
 from flask import request
-from backends import Backend, TimeFilter
+from backends import Backend
 from pages import Page
 
 app = Flask(__name__)
