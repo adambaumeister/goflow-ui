@@ -111,7 +111,15 @@ class IP4Column(Column):
         return "inet_ntoa({0})".format(self.name)
 
     def filter(self, value, op=None):
-        self.filter_string = "{0} == {1}".format(self.name, value)
+        s = value.split("/")
+        if len(s) > 1:
+            ip = ipaddress.ip_network(value, strict=False)
+            start_ip = ip.network_address
+            end_ip = ip.broadcast_address
+            self.filter_string = "({0} > {1} AND {0} < {2})".format(self.name, int(start_ip), int(end_ip))
+        else:
+            ip = ipaddress.ip_address(value)
+            self.filter_string = "{0} == {1}".format(self.name, int(ip))
 
 class IntColumn(Column):
     def __init__(self, name, display_name=None):
@@ -159,14 +167,16 @@ class Schema:
         self.filters = []
 
         self.filter_map = {
-            "\d+\-\d+\-\d+": "last_switched",
-            "src \d+\.\d+\.\d+\.\d+": "src_ip",
-            "dst \d+\.\d+\.\d+\.\d+": "dst_ip",
+            "(\d+\-\d+\-\d+)": "last_switched",
+            "src (\d+\.\d+\.\d+\.\d+\/\d+|\d+\.\d+\.\d+\.\d+)": "src_ip",
+            "dst (\d+\.\d+\.\d+\.\d+\/\d+|\d+\.\d+\.\d+\.\d+)": "dst_ip",
         }
 
     def add_filter(self, value, op=None):
         for regex, column in self.filter_map.items():
             if re.search(regex, value):
+                m = re.search(regex, value)
+                value = m.group(1)
                 self.columns[column].filter(value, op)
 
     def build_filter_string(self):
