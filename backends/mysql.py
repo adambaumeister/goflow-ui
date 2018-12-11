@@ -2,6 +2,7 @@ from .default import Backend
 import mysql.connector
 from chartgraph import Graph, Table
 import re
+import ipaddress
 
 class Mysql_backend(Backend):
     def __init__(self, OPTIONS):
@@ -18,7 +19,8 @@ class Mysql_backend(Backend):
         )
 
         self.filter_map = {
-            "\d+\-\d+\-\d+": TimeFilter
+            "\d+\-\d+\-\d+": TimeFilter,
+            "\S+\s+\S+": FilterString,
         }
         self.schema = Schema()
 
@@ -92,6 +94,47 @@ class TimeFilter:
 
     def get_query_string(self):
         return "last_switched {0} \"{1}\"".format(self.op, self.value)
+
+class IPFilter:
+    def __init__(self, op, value, col):
+        self.op = op
+        self.value = value
+        self.column = col
+
+    def get_query_string(self):
+        ip = ipaddress.ip_address(self.value)
+        return "{2} {0} \"{1}\"".format(self.op, int(ip), self.column)
+
+class FilterString:
+    def __init__(self, value, op=None):
+        self.op = op
+        self.value = value
+        self.keywords = [
+            "src",
+            "dst",
+        ]
+        self.filter_map = {
+            "\d+\.\d+\.\d+\.\d+": IPFilter
+        }
+        self.parse_to_strings()
+
+    def parse_to_strings(self):
+        strings = []
+        for kw in self.keywords:
+            if re.search(kw, self.value):
+                strings = strings + re.findall("({0}\s+\S+)".format(kw), self.value)
+
+        self.strings = strings
+
+    def parse_to_filters(self):
+        filters = []
+        for string in self.strings:
+            op = string.split(" ")[0]
+            value = string.split(" ")[1]
+            for regex, f in self.filter_map.items():
+                if re.match(regex, string):
+                    filter = f(op, value)
+                    self.schema.add_filter(filter)
 
 class Column:
     """
