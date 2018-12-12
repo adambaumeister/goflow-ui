@@ -65,10 +65,13 @@ def topn():
     field = f.register_input("f", "text")
     start_time = f.register_input("start-time", "text")
     end_time = f.register_input("end-time", "text")
+    search = f.register_input("search", "text")
+    search.default = "Search"
     topn_max.default = 10
     f.parse(request.args)
     b.add_filter(op=">", value=start_time.value)
     b.add_filter(op="<", value=end_time.value)
+    b.add_filter(op=None, value=search.value)
 
     g = b.topn_graph(field.value, topn_max.value)
 
@@ -92,12 +95,15 @@ def topn_sum():
     sum = f.register_input("sum", "text")
     start_time = f.register_input("start-time", "text")
     end_time = f.register_input("end-time", "text")
+    search = f.register_input("search", "text")
+    search.default = "Search"
     topn_max.default = 10
     f.parse(request.args)
     field = field.value
     sum = sum.value
     b.add_filter(op=">", value=start_time.value)
     b.add_filter(op="<", value=end_time.value)
+    b.add_filter(op=None, value=search.value)
 
     g = b.topn_sum_graph(field, sum)
     chart = g.render()
