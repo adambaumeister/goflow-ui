@@ -47,6 +47,13 @@ td {
     text-align: center;
 }
 
+.search-box {
+    margin-top: 12px;
+    width: 20%;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+}
+
 ul {
     padding-inline-start: 0px;
 }

@@ -8,7 +8,7 @@ $(document).ready( function () {
     // Forward populate input fields with get params
     //
     if ( startTime == undefined ) {
-        startTime = "1970-01-01 00:00"
+        startTime = "now -1 month"
     } else {
         startTime = decodeURIComponent($.getUrlVar('start-time'));
         // Forward populate input field if not empty
