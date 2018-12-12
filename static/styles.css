@@ -83,6 +83,19 @@ li {
     width: 50%;
     float: right;
 }
+.time-shroud {
+    display: none;
+    float: right;
+    margin-right: 100px;
+    margin-top: 12px;
+    padding: 5px;
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+}
+.time-shroud:hover {
+    background-color: white;
+    color: #b5b5b5;
+}
 .nav-buttons {
     width: 50%;
     float: left;

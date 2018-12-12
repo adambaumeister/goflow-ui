@@ -8,7 +8,7 @@ $(document).ready( function () {
     // Forward populate input fields with get params
     //
     if ( startTime == undefined ) {
-        startTime = "now -1 month"
+        startTime = "now"
     } else {
         startTime = decodeURIComponent($.getUrlVar('start-time'));
         // Forward populate input field if not empty
@@ -26,6 +26,16 @@ $(document).ready( function () {
         s = decodeURIComponent($.getUrlVar('search'));
         $("#search").val(s)
     }
+
+    if ( endTime == startTime) {
+        $(".time-buttons").hide()
+        $(".time-shroud").show()
+    }
+
+    $(".time-shroud").click(function() {
+        $(".time-shroud").hide()
+        $(".time-buttons").show()
+    });
 
     $('#start-picker').dateTimePicker({
         positionShift: { top: 20, left: 400},
