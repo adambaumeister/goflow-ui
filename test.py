@@ -20,7 +20,6 @@ b = backends.get("mysql", OPTIONS=options)
 
 def page_setup(template="test.html"):
     p = Page(header_template="header.html", body_template=template, footer_template="footer.html")
-    p.add_nav_button("/topn?f=dst_ip", "Graph by Flows")
     p.add_nav_button("/topn_sum?f=dst_ip&sum=in_bytes", "Graph by Sum")
     p.add_nav_button("/flow", "Flows")
     return p
@@ -49,39 +48,6 @@ def flow_search():
     }
 
     return p.render_page(table=t, forms=form)
-
-
-@app.route('/topn')
-def topn():
-    """
-    Topn graph is the top N results for query based on amount of flows
-    :return: HTML
-    """
-    p = page_setup("graph.html")
-
-    # Form setup for this page
-    f = p.register_form()
-    topn_max = f.register_input("max", "int")
-    field = f.register_input("f", "text")
-    start_time = f.register_input("start-time", "text")
-    end_time = f.register_input("end-time", "text")
-    search = f.register_input("search", "text")
-    search.default = "Search"
-    topn_max.default = 10
-    f.parse(request.args)
-    b.add_filter(op=">", value=start_time.value)
-    b.add_filter(op="<", value=end_time.value)
-    b.add_filter(op=None, value=search.value)
-
-    g = b.topn_graph(field.value, topn_max.value)
-
-    chart = g.render()
-    form = {
-        "select": b.get_columns(),
-        "current": f.inputs,
-    }
-
-    return p.render_page(chart=chart, chartname=g.name, forms=form)
 
 
 @app.route('/topn_sum')

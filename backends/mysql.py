@@ -176,8 +176,8 @@ class Schema:
         for regex, column in self.filter_map.items():
             if re.search(regex, value):
                 m = re.search(regex, value)
-                value = m.group(1)
-                self.columns[column].filter(value, op)
+                v = m.group(1)
+                self.columns[column].filter(v, op)
 
     def build_filter_string(self):
         s = 'WHERE '
