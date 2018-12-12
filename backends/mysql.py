@@ -116,6 +116,17 @@ class IntColumn(Column):
     def filter(self, value, op=None):
         self.filter_string = "{0} = {1}".format(self.name, value)
 
+class PortColumn(Column):
+    def __init__(self, name, display_name=None):
+        super().__init__(name, display_name)
+        self.type = 'port'
+
+    def select(self):
+        return "{0}".format(self.name)
+
+    def filter(self, value, op=None):
+        self.filter_string = "{0} = {1}".format(self.name, value)
+
 class Schema:
     """
     Schema
@@ -140,9 +151,9 @@ class Schema:
         self.columns = {
             "last_switched": Column("last_switched", "Last Switched"),
             "src_ip": IP4Column("src_ip", "Source IP"),
-            "src_port": IntColumn("src_port", "Source Port"),
+            "src_port": PortColumn("src_port", "Source Port"),
             "dst_ip": IP4Column("dst_ip", "Destination IP"),
-            "dst_port": IntColumn("dst_port", "Destination Port"),
+            "dst_port": PortColumn("dst_port", "Destination Port"),
             "in_bytes": IntColumn("in_bytes", "Input bytes"),
         }
 

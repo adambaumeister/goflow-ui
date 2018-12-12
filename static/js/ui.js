@@ -47,6 +47,8 @@ $(document).ready( function () {
         selectData: endTime
     });
 
+
+
     $('#select-form').submit( function(eventObj) {
         if ( $("#start-time").val() != '' ) {
             $("#select-form").append( "<input type='hidden' name='start-time' value='" + $("#start-time").val() + "'>");
@@ -59,6 +61,13 @@ $(document).ready( function () {
         }
 
         return true;
+    });
+
+    $('.form-box').keypress(function (e) {
+        if (e.which == 13) {
+            $('#select-form').submit();
+            return false;    //<---- Add this line
+        }
     });
 
     $('#flow-table').hpaging({

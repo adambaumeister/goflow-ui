@@ -1,10 +1,12 @@
-<div class="form-container">
-    <form  enctype="text/plain" id="select-form" action="" method="get">
-        <ul class="form-list">
-            <li><label>Limit</label>
-                <input id='top-value' class="form-box" type="text" name="max" value="{{ forms.current.max.value }}">
-            </li>
-        </ul>
-    </form>
+<div class="chart-container">
+    <div class="form-container">
+        <form  enctype="text/plain" id="select-form" action="" method="get">
+            <ul class="form-list">
+                <li><label>Limit</label>
+                    <input id='top-value' class="form-box" type="text" name="max" value="{{ forms.current.max.value }}">
+                </li>
+            </ul>
+        </form>
+    </div>
+    {{ table|safe }}
 </div>
-{{ table|safe }}
