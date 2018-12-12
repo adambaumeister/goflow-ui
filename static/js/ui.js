@@ -8,11 +8,11 @@ $(document).ready( function () {
     // Forward populate input fields with get params
     //
     if ( startTime == undefined ) {
-        startTime = "now"
+        startTime = "now";
     } else {
         startTime = decodeURIComponent($.getUrlVar('start-time'));
         // Forward populate input field if not empty
-        $("#start-time").val(startTime)
+        $("#start-time").val(startTime);
     }
 
     if ( endTime == undefined ) {
@@ -23,13 +23,14 @@ $(document).ready( function () {
         $("#end-time").val(endTime)
     }
     if ( search != undefined ) {
-        s = decodeURIComponent($.getUrlVar('search'));
-        $("#search").val(s)
+        var s = decodeURIComponent(search);
+        res = s.replace(/\+/g, " ");
+        $("#search").val(res);
     }
 
     if ( endTime == startTime) {
-        $(".time-buttons").hide()
-        $(".time-shroud").show()
+        $(".time-buttons").hide();
+        $(".time-shroud").show();
     }
 
     $(".time-shroud").click(function() {

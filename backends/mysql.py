@@ -7,7 +7,6 @@ import ipaddress
 class Mysql_backend(Backend):
     def __init__(self, OPTIONS):
         super().__init__()
-        print("Got this far")
         self.required_opts = ['host', 'user', 'passwd', 'db']
         self.parse_options(OPTIONS)
         self.columns = {}
@@ -44,24 +43,6 @@ class Mysql_backend(Backend):
         t = t.table_from_rows(r, self.schema.column_order)
         return t
 
-    def topn_graph(self, field, limit=10):
-        db = self.db
-        self.schema.limit = limit
-        FLOWS_PER_IP = self.schema.topn(field)
-
-        cursor = db.cursor()
-        cursor.execute("USE testgoflow")
-        cursor.execute(FLOWS_PER_IP)
-        r = cursor.fetchall()
-        g = Graph()
-        g.name = "topn_{0}".format(field)
-        g.set_headers([
-            field,
-            "Total"
-        ])
-        g.graph_from_rows(r, 0)
-        return g
-
     def topn_sum_graph(self, field, sum_by, limit=10):
         db = self.db
         self.schema.limit = limit
@@ -91,7 +72,7 @@ class Column:
         self.name = name
         self.display_name = display_name
         self.type = 'text'
-        self.filter_string = ''
+        self.filter_string = None
 
     def get_display_name(self):
         return self.display_name
@@ -100,7 +81,10 @@ class Column:
         return "{0}".format(self.name)
 
     def filter(self, value, op=None):
-        self.filter_string = "{2} {0} \"{1}\"".format(op, value, self.name)
+        if self.filter_string:
+            self.filter_string = self.filter_string + "AND {2} {0} \"{1}\"".format(op, value, self.name)
+        else:
+            self.filter_string = "{2} {0} \"{1}\"".format(op, value, self.name)
 
 class IP4Column(Column):
     def __init__(self, name, display_name=None):
@@ -129,6 +113,9 @@ class IntColumn(Column):
     def select(self):
         return "{0}".format(self.name)
 
+    def filter(self, value, op=None):
+        self.filter_string = "{0} = {1}".format(self.name, value)
+
 class Schema:
     """
     Schema
@@ -153,9 +140,9 @@ class Schema:
         self.columns = {
             "last_switched": Column("last_switched", "Last Switched"),
             "src_ip": IP4Column("src_ip", "Source IP"),
-            "src_port": Column("src_port", "Source Port"),
+            "src_port": IntColumn("src_port", "Source Port"),
             "dst_ip": IP4Column("dst_ip", "Destination IP"),
-            "dst_port": Column("dst_port", "Destination Port"),
+            "dst_port": IntColumn("dst_port", "Destination Port"),
             "in_bytes": IntColumn("in_bytes", "Input bytes"),
         }
 
@@ -170,9 +157,11 @@ class Schema:
             "(\d+\-\d+\-\d+)": "last_switched",
             "src (\d+\.\d+\.\d+\.\d+\/\d+|\d+\.\d+\.\d+\.\d+)": "src_ip",
             "dst (\d+\.\d+\.\d+\.\d+\/\d+|\d+\.\d+\.\d+\.\d+)": "dst_ip",
+            "src ([0-9]+)($|\s)": "src_port",
+            "dst ([0-9]+)($|\s)": "dst_port",
         }
 
-    def add_filter(self, value, op=None):
+    def add_filter(self, value, op="="):
         for regex, column in self.filter_map.items():
             if re.search(regex, value):
                 m = re.search(regex, value)

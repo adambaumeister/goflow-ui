@@ -55,6 +55,8 @@ td {
 
 ul {
     padding-inline-start: 0px;
+    background-color: #f3f3f3;
+    border-radius: 10px;
 }
 
 .search-container {

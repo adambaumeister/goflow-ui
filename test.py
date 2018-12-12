@@ -16,7 +16,6 @@ options = {
     "passwd": pw,
     "db": "testgoflow"
 }
-b = backends.get("mysql", OPTIONS=options)
 
 def page_setup(template="test.html"):
     p = Page(header_template="header.html", body_template=template, footer_template="footer.html")
@@ -26,6 +25,7 @@ def page_setup(template="test.html"):
 
 @app.route('/flow')
 def flow_search():
+    b = backends.get("mysql", OPTIONS=options)
     p = page_setup("flow_table.html")
 
     # Form setup for this page
@@ -52,6 +52,7 @@ def flow_search():
 
 @app.route('/topn_sum')
 def topn_sum():
+    b = backends.get("mysql", OPTIONS=options)
     p = page_setup("sum_graph.html")
 
     # Form setup for this page
