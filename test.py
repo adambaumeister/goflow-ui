@@ -31,13 +31,16 @@ def flow_search():
 
     # Form setup for this page
     f = p.register_form()
+    search = f.register_input("search", "text")
     topn_max = f.register_input("max", "int")
     start_time = f.register_input("start-time", "text")
     end_time = f.register_input("end-time", "text")
+    search.default = "Search"
     topn_max.default = 10
     f.parse(request.args)
     b.add_filter(op=">", value=start_time.value)
     b.add_filter(op="<", value=end_time.value)
+    b.add_filter(op=None, value=search.value)
 
     t = b.flow_table(topn_max.value)
 

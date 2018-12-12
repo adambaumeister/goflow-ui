@@ -2,7 +2,11 @@ $(document).ready( function () {
 
     var startTime = $.getUrlVar('start-time');
     var endTime = $.getUrlVar('end-time');
+    var search = $.getUrlVar('search');
 
+    //
+    // Forward populate input fields with get params
+    //
     if ( startTime == undefined ) {
         startTime = "1970-01-01 00:00"
     } else {
@@ -18,6 +22,11 @@ $(document).ready( function () {
         // Forward populate input field if not empty
         $("#end-time").val(endTime)
     }
+    if ( search != undefined ) {
+        s = decodeURIComponent($.getUrlVar('search'));
+        $("#search").val(s)
+    }
+
     $('#start-picker').dateTimePicker({
         positionShift: { top: 20, left: 400},
         selectData: startTime
@@ -33,7 +42,10 @@ $(document).ready( function () {
         }
         if ( $("#end-time").val() != '' ) {
             $("#select-form").append( "<input type='hidden' name='end-time' value='" + $("#end-time").val() + "'>");
-         }
+        }
+        if ( $("#search").val() != '' ) {
+            $("#select-form").append( "<input type='hidden' name='search' value='" + $("#search").val() + "'>");
+        }
 
         return true;
     });

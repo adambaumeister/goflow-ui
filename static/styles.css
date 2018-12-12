@@ -5,12 +5,16 @@
 }
 
 table {
-    margin-top: 100px;
     margin-left: auto;
     margin-right: auto;
     border: 1px solid #dadada;
     border-radius: 20px;
     width: 1000px;
+    min-height: 900px;
+}
+
+.table-break {
+    margin-top: 100px;
 }
 
 td {
@@ -41,7 +45,17 @@ td {
 .form-container {
     width:100%;
     text-align: center;
+}
 
+ul {
+    padding-inline-start: 0px;
+}
+
+.search-container {
+    width: 100%;
+    float: left;
+    text-align: center;
+    height: 60px;
 }
 
 label {
@@ -74,7 +88,8 @@ li {
 .main-nav {
     min-height: 60px;
     background-color: white;
-    box-shadow: -4px 3px 11px 0px #969696;
+    box-shadow: -4px 5px 11px 0px #e8e8e8;
+    border-bottom: 1px solid #e8e8e8
 }
 .nav-container {
     margin: 0 auto;

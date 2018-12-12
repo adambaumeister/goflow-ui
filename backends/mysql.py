@@ -119,7 +119,7 @@ class IP4Column(Column):
             self.filter_string = "({0} > {1} AND {0} < {2})".format(self.name, int(start_ip), int(end_ip))
         else:
             ip = ipaddress.ip_address(value)
-            self.filter_string = "{0} == {1}".format(self.name, int(ip))
+            self.filter_string = "{0} = {1}".format(self.name, int(ip))
 
 class IntColumn(Column):
     def __init__(self, name, display_name=None):

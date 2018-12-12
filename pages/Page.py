@@ -12,6 +12,7 @@ class Page:
         self.footer_template = footer_template
         self.body_template = body_template
         self.nav_buttons = []
+        self.forms = ''
 
     def render_header(self, **kwargs):
         return render_template(self.header_template, **kwargs, nav_buttons=self.nav_buttons)
@@ -40,7 +41,11 @@ class Page:
         :return: empty Form
         """
         f = Form()
+        self.forms = f
         return f
+
+    def get_form(self):
+        return self.forms
 
 class NavButton:
     def __init__(self, href, name):
