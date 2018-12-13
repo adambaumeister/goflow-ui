@@ -28,4 +28,28 @@ var chart = new Chart(ctx, {
         }
     }
 });
+$(document).ready( function () {
+    var data = chart.data.datasets[0].data
+    $("#KBytes").click(function() {
+        var newData = []
+        $.each(data, function ( index, value ) {
+            newData.push(value / 1000)
+        });
+        chart.data.datasets[0].data = newData;
+        chart.update();
+    });
+
+    $("#MBytes").click(function() {
+        var newData = []
+        $.each(data, function ( index, value ) {
+            newData.push(value / 1000000)
+        });
+        chart.data.datasets[0].data = newData;
+        chart.update();
+    });
+});
 </script>
+<div class="form-container">
+    <input type="button" value="KBytes" id="KBytes">
+    <input type="button" value="MBytes" id="MBytes">
+</div>
