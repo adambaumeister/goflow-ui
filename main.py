@@ -1,21 +1,24 @@
 
-import os
 from flask import Flask
 from flask import request
 from backends import Backend
 from pages import Page
+import yaml
 
 app = Flask(__name__)
+CONFIG_FILE = "./config.yml"
+def backend_from_config(config_file):
+    with open(config_file, 'r') as stream:
+        try:
+            c = yaml.load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+            exit(1)
 
-
-backends = Backend()
-pw = os.environ.get("SQL_PASSWORD")
-options = {
-    "host": "52.62.226.159",
-    "user": "testgoflow",
-    "passwd": pw,
-    "db": "testgoflow"
-}
+    b = Backend()
+    options = c['backend']['config']
+    t = c['backend']['type']
+    return b.get(t, OPTIONS=options)
 
 def page_setup(template="test.html"):
     p = Page(header_template="header.html", body_template=template, footer_template="footer.html")
@@ -25,7 +28,7 @@ def page_setup(template="test.html"):
 
 @app.route('/flow')
 def flow_search():
-    b = backends.get("mysql", OPTIONS=options)
+    b = backend_from_config(CONFIG_FILE)
     p = page_setup("flow_table.html")
 
     # Form setup for this page
@@ -52,7 +55,7 @@ def flow_search():
 
 @app.route('/topn_sum')
 def topn_sum():
-    b = backends.get("mysql", OPTIONS=options)
+    b = backend_from_config(CONFIG_FILE)
     p = page_setup("sum_graph.html")
 
     # Form setup for this page

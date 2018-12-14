@@ -1,0 +1,12 @@
+#
+# Goflow-UI configuration
+#
+# Backends - Where the data is
+backend:
+  type: mysql
+  config:
+    SQL_SERVER: 52.62.226.159
+    SQL_USERNAME: testgoflow
+    SQL_DB: testgoflow
+    # SQL Password can be specified here, or set via environment variable of the same name
+    #SQL_PASSWORD: notarealpassword...orisit?

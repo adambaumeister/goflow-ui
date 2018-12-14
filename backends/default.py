@@ -15,7 +15,7 @@ class Backend():
         if OPTIONS:
             for opt in self.required_opts:
                 if opt not in OPTIONS:
-                    raise ValueError("Missing option to backend.")
+                    raise ValueError("Missing option {0} to backend.".format(opt))
         else:
             raise ValueError("Missing backend options.")
 
