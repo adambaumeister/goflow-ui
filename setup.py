@@ -13,6 +13,7 @@ setup(name="goflow-ui",
       author_email="adam.baumeister@csiro.au",
       packages=find_packages(),
       install_requires=DEPENDENCIES,
-      scripts=['main.py', 'config.yml'],
+      scripts=['main.py', ],
+      include_package_data=True,
       )
 

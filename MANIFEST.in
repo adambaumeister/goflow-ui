@@ -1,0 +1,3 @@
+recursive-include goflow-ui/templates *
+recursive-include goflow-ui/static *
+include config.yml
