@@ -7,7 +7,7 @@ DEPENDENCIES = [
 ]
 
 setup(name="goflow-ui",
-      version=0.03,
+      version=0.04,
       description="GoFlow basic user interface",
       author="Adam Baumeister",
       author_email="adam.baumeister@csiro.au",
