@@ -1,3 +1,0 @@
-recursive-include templates *
-recursive-include static *
-include config.yml
