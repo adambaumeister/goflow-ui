@@ -7,13 +7,13 @@ DEPENDENCIES = [
 ]
 
 setup(name="goflow-ui",
-      version=0.04,
+      version=0.05,
       description="GoFlow basic user interface",
       author="Adam Baumeister",
       author_email="adam.baumeister@csiro.au",
       packages=find_packages(),
       install_requires=DEPENDENCIES,
-      scripts=['main.py', ],
+      scripts=['main.py'],
       include_package_data=True,
       )
 
