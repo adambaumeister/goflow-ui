@@ -6,8 +6,8 @@ from .pages import Page
 import yaml
 import os
 
-if os.environ.get("CONFIG_FILE"):
-    CONFIG_FILE = os.environ.get("CONFIG_FILE")
+if os.environ.get("GF_CONFIG_FILE"):
+    CONFIG_FILE = os.environ.get("GF_CONFIG_FILE")
 else:
     CONFIG_FILE = "./config.yml"
 
