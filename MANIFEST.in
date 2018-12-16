@@ -1,2 +1,3 @@
 recursive-include gfui/static *
 recursive-include gfui/templates *
+include gfui/config.yml
