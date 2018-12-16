@@ -1,10 +1,10 @@
-import backends
+import gfui.backends
 
 class Backend():
     def __init__(self):
         self.required_opts = []
         self.type_map = {
-            "mysql": backends.Mysql_backend
+            "mysql": gfui.backends.Mysql_backend
         }
 
     def get(self, backend_type, OPTIONS=None):

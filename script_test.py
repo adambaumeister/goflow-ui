@@ -1,5 +1,4 @@
 from backends import Schema
-import re
 
 s = Schema()
 s.add_filter("src 53")

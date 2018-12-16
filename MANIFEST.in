@@ -1,0 +1,2 @@
+recursive-include gfui/static *
+recursive-include gfui/templates *

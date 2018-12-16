@@ -6,15 +6,14 @@ DEPENDENCIES = [
     "mysql-connector",
 ]
 
-setup(name="goflow-ui",
-      version=0.07,
+setup(name="gfui",
+      version=0.08,
       description="GoFlow basic user interface",
       author="Adam Baumeister",
       author_email="adam.baumeister@csiro.au",
       packages=find_packages(),
       install_requires=DEPENDENCIES,
-      scripts=['main.py'],
+      scripts=['start.py'],
       include_package_data=True,
-      data_files=[('templates', ['templates/*'])]
       )
 

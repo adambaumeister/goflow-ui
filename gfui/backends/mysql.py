@@ -1,6 +1,6 @@
 from .default import Backend
 import mysql.connector
-from chartgraph import Graph, Table
+from ..chartgraph import Graph, Table
 import re
 import ipaddress
 import os

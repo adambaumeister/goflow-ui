@@ -1,12 +1,21 @@
 
 from flask import Flask
 from flask import request
-from backends import Backend
-from pages import Page
+from .backends import Backend
+from .pages import Page
 import yaml
+import os
+
+if os.environ.get("CONFIG_FILE"):
+    CONFIG_FILE = os.environ.get("CONFIG_FILE")
+else:
+    CONFIG_FILE = "./config.yml"
 
 app = Flask(__name__)
-CONFIG_FILE = "./config.yml"
+def Start():
+    return app
+
+
 def backend_from_config(config_file):
     with open(config_file, 'r') as stream:
         try:
