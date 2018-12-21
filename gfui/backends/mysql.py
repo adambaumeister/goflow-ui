@@ -110,6 +110,29 @@ class IP4Column(Column):
             ip = ipaddress.ip_address(value)
             self.filter_string = "{0} = {1}".format(self.name, int(ip))
 
+        return self.filter_string
+
+class IP6Column(Column):
+    def __init__(self, name, display_name=None):
+        super().__init__(name, display_name)
+        self.type = "ip6"
+
+    def select(self):
+        return "inet6_ntoa({0})".format(self.name)
+
+    def filter(self, value, op=None):
+        s = value.split("/")
+        if len(s) > 1:
+            ip = ipaddress.ip_network(value, strict=False)
+            start_ip = ip.network_address
+            end_ip = ip.broadcast_address
+            self.filter_string = "({0} > {1} AND {0} < {2})".format(self.name, int(start_ip), int(end_ip))
+        else:
+            ip = ipaddress.ip_address(value)
+            self.filter_string = "{0} = {1}".format(self.name, int(ip))
+
+        return self.filter_string
+
 class IntColumn(Column):
     def __init__(self, name, display_name=None):
         super().__init__(name, display_name)
@@ -120,6 +143,7 @@ class IntColumn(Column):
 
     def filter(self, value, op=None):
         self.filter_string = "{0} = {1}".format(self.name, value)
+        return self.filter_string
 
 class PortColumn(Column):
     def __init__(self, name, display_name=None):
@@ -131,6 +155,37 @@ class PortColumn(Column):
 
     def filter(self, value, op=None):
         self.filter_string = "{0} = {1}".format(self.name, value)
+        return self.filter_string
+
+class Coalesce:
+    def __init__(self, name, columns, filter_func, display_name):
+        """
+        Coalesce
+        Select from a list of columns whatever is not null
+        :param columns (List): Column objects
+        """
+        self.name = name
+        self.columns = columns
+        # We assume that the passed columns are of roughly the same type
+        self.type = columns[0].type
+        self.column_selects = []
+        for c in columns:
+            self.column_selects.append(c.select())
+
+        self.filter_string = None
+        self.filter_func = filter_func
+        self.display_name = display_name
+
+    def get_display_name(self):
+        return self.display_name
+
+    def select(self):
+        fields = ", ".join(self.column_selects)
+        return "COALESCE({0}) AS {1}".format(fields, self.name)
+
+    def filter(self, value, op=None):
+        self.filter_string = self.filter_func(value, op)
+        print(self.filter_string)
 
 class Schema:
     """
@@ -151,15 +206,20 @@ class Schema:
             "dst_port",
             "in_bytes",
         ]
+        src_ip_col = IP4Column("src_ip", "Source IP")
+        src_ipv6_col = IP6Column("src_ipv6", "Source IPv6")
+        dst_ip_col = IP4Column("dst_ip", "Destination IP")
+        dst_ipv6_col = IP6Column("dst_ipv6", "DestinationIPv6")
 
         # Columns
         self.columns = {
             "last_switched": Column("last_switched", "Last Switched"),
-            "src_ip": IP4Column("src_ip", "Source IP"),
+            "src_ip": Coalesce("src_c_ip", [src_ip_col, src_ipv6_col], src_ip_col.filter, "Source IP"),
             "src_port": PortColumn("src_port", "Source Port"),
-            "dst_ip": IP4Column("dst_ip", "Destination IP"),
+            "dst_ip": Coalesce("dst_c_ip", [dst_ip_col, dst_ipv6_col], dst_ip_col.filter, "Destination IP"),
             "dst_port": PortColumn("dst_port", "Destination Port"),
             "in_bytes": IntColumn("in_bytes", "Input bytes"),
+            "in_pkts": IntColumn("in_pkts", "Input Packets"),
         }
 
         # Supported queries
@@ -220,8 +280,9 @@ class Schema:
 
     def topn_sum(self, column, sum_by):
         q = """
-        SELECT {0}, sum({1}) AS c FROM goflow_records {2} GROUP BY {0} ORDER BY c DESC
-        """.format(self.columns[column].select(), sum_by, self.build_filter_string())
+        SELECT {0}, sum({1}) AS c FROM test_goflow_records {2} GROUP BY {3} ORDER BY c DESC
+        """.format(self.columns[column].select(), sum_by, self.build_filter_string(), self.columns[column].name)
+        print(q)
         return self.query_boilerplate(q)
 
     def flows(self):
@@ -231,6 +292,7 @@ class Schema:
         q = """
         SELECT {1} FROM goflow_records {0} ORDER BY last_switched DESC
         """.format(self.build_filter_string(), ", ".join(c))
+        print(q)
         return self.query_boilerplate(q)
 
     def query_boilerplate(self, q):
