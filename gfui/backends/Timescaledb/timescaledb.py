@@ -43,8 +43,7 @@ class Timescaledb_backend(Backend):
         self.schema.limit = limit
         FLOWS = self.schema.flows()
 
-        cursor = db.cursor()
-        cursor.execute(FLOWS)
+        cursor = self.schema.query(db, FLOWS)
         r = cursor.fetchall()
         t = Table()
         t = t.table_from_rows(r, self.schema.column_order)
@@ -151,7 +150,7 @@ class PortColumn(Column):
         return "{0}".format(self.name)
 
     def filter(self, value, op=None):
-        self.filter_string = "{0} = {1}".format(self.name, value)
+        self.filter_string = "{0} = %s".format(self.name, value)
         return self.filter_string
 
 class Coalesce:
@@ -207,8 +206,7 @@ class Schema:
         dst_ip_col = IP4Column("dst_ip", "Destination IP")
         dst_ipv6_col = IP6Column("dst_ipv6", "DestinationIPv6")
 
-        # Filter tuples are filter values
-        self.filter_tuples = ()
+        self.filter_val_list = []
 
         # Columns
         self.columns = {
@@ -242,6 +240,7 @@ class Schema:
                 m = re.search(regex, value)
                 v = m.group(1)
                 self.columns[column].filter(v, op)
+                self.filter_val_list.append(v)
 
     def build_filter_string(self):
         s = 'WHERE '
@@ -298,4 +297,5 @@ class Schema:
 
     def query(self, db, q):
         cursor = db.cursor()
-        cursor.execute(q, self.filter_tuples)
+        cursor.execute(q, self.filter_val_list)
+        return cursor
