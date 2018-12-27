@@ -207,6 +207,9 @@ class Schema:
         dst_ip_col = IP4Column("dst_ip", "Destination IP")
         dst_ipv6_col = IP6Column("dst_ipv6", "DestinationIPv6")
 
+        # Filter tuples are filter values
+        self.filter_tuples = ()
+
         # Columns
         self.columns = {
             "last_switched": Column("last_switched", "Last Switched"),
@@ -292,3 +295,7 @@ class Schema:
     def query_boilerplate(self, q):
         q = q + """LIMIT {0}""".format(self.limit)
         return q
+
+    def query(self, db, q):
+        cursor = db.cursor()
+        cursor.execute(q, self.filter_tuples)
