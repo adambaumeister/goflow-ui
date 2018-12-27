@@ -3,10 +3,12 @@
 #
 # Backends - Where the data is
 backend:
-  type: mysql
+  type: timescaledb
   config:
-    SQL_SERVER: 52.62.226.159
-    SQL_USERNAME: testgoflow
+    SQL_SERVER: ec2-54-252-192-35.ap-southeast-2.compute.amazonaws.com
+    SQL_USERNAME: remoteuser
     SQL_DB: testgoflow
+    #SQL_SERVER: 52.62.226.159
+    #SQL_USERNAME: testgoflow
     # SQL Password can be specified here, or set via environment variable of the same name
     #SQL_PASSWORD: notarealpassword...orisit?

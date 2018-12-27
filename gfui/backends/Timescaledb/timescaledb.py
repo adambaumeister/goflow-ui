@@ -1,11 +1,11 @@
-from .default import Backend
-import mysql.connector
-from ..chartgraph import Graph, Table
+from gfui.backends.default import Backend
+import psycopg2
+from gfui.chartgraph import Graph, Table
 import re
 import ipaddress
 import os
 
-class Mysql_backend(Backend):
+class Timescaledb_backend(Backend):
     def __init__(self, OPTIONS):
         super().__init__()
         self.required_opts = ['SQL_SERVER', 'SQL_USERNAME', 'SQL_DB']
@@ -16,10 +16,13 @@ class Mysql_backend(Backend):
         if not pw:
             pw = self.OPTIONS['SQL_PASSWORD']
 
-        self.db = mysql.connector.connect(
-            host=self.OPTIONS['SQL_SERVER'],
-            user=self.OPTIONS['SQL_USERNAME'],
-            passwd=pw
+        self.db = psycopg2.connect(
+            "dbname={0} user={1} password={2} host={3}".format(
+                self.OPTIONS['SQL_DB'],
+                self.OPTIONS['SQL_USERNAME'],
+                pw,
+                self.OPTIONS['SQL_SERVER']
+            )
         )
 
         self.schema = Schema()
@@ -41,7 +44,6 @@ class Mysql_backend(Backend):
         FLOWS = self.schema.flows()
 
         cursor = db.cursor()
-        cursor.execute("USE testgoflow")
         cursor.execute(FLOWS)
         r = cursor.fetchall()
         t = Table()
@@ -54,7 +56,6 @@ class Mysql_backend(Backend):
         FLOWS_PER_IP = self.schema.topn_sum(field, sum_by)
 
         cursor = db.cursor()
-        cursor.execute("USE testgoflow")
         cursor.execute(FLOWS_PER_IP)
         r = cursor.fetchall()
         g = Graph()
@@ -97,18 +98,14 @@ class IP4Column(Column):
         self.type = "ip"
 
     def select(self):
-        return "inet_ntoa({0})".format(self.name)
+        return "{0}".format(self.name)
 
     def filter(self, value, op=None):
         s = value.split("/")
         if len(s) > 1:
-            ip = ipaddress.ip_network(value, strict=False)
-            start_ip = ip.network_address
-            end_ip = ip.broadcast_address
-            self.filter_string = "({0} > {1} AND {0} < {2})".format(self.name, int(start_ip), int(end_ip))
+            self.filter_string = "({0} << '{1}'".format(self.name, value)
         else:
-            ip = ipaddress.ip_address(value)
-            self.filter_string = "{0} = {1}".format(self.name, int(ip))
+            self.filter_string = "{0} = '{1}'".format(self.name, value)
 
         return self.filter_string
 
@@ -118,7 +115,7 @@ class IP6Column(Column):
         self.type = "ip6"
 
     def select(self):
-        return "inet6_ntoa({0})".format(self.name)
+        return "{0}".format(self.name)
 
     def filter(self, value, op=None):
         s = value.split("/")
@@ -185,7 +182,6 @@ class Coalesce:
 
     def filter(self, value, op=None):
         self.filter_string = self.filter_func(value, op)
-        print(self.filter_string)
 
 class Schema:
     """
@@ -280,9 +276,8 @@ class Schema:
 
     def topn_sum(self, column, sum_by):
         q = """
-        SELECT {0}, sum({1}) AS c FROM test_goflow_records {2} GROUP BY {3} ORDER BY c DESC
+        SELECT {0}, sum({1}) AS c FROM goflow_records {2} GROUP BY {3} ORDER BY c DESC
         """.format(self.columns[column].select(), sum_by, self.build_filter_string(), self.columns[column].name)
-        print(q)
         return self.query_boilerplate(q)
 
     def flows(self):
@@ -292,7 +287,6 @@ class Schema:
         q = """
         SELECT {1} FROM goflow_records {0} ORDER BY last_switched DESC
         """.format(self.build_filter_string(), ", ".join(c))
-        print(q)
         return self.query_boilerplate(q)
 
     def query_boilerplate(self, q):

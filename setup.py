@@ -4,10 +4,11 @@ DEPENDENCIES = [
     "PyYAML",
     "Flask",
     "mysql-connector",
+    "psycopg2"
 ]
 
 setup(name="gfui",
-      version=0.11,
+      version=0.12,
       description="GoFlow basic user interface",
       author="Adam Baumeister",
       author_email="adam.baumeister@csiro.au",

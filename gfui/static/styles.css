@@ -103,7 +103,7 @@ li {
 }
 .main-header {
     min-height: 100px;
-    background-color: #5893bd;
+    background-color: #867bff;
     font-family: 'Baloo';
 }
 .main-nav {
@@ -151,4 +151,10 @@ li {
 body {
     font-family: 'Baloo';
     margin: 0px;
+}
+
+.title-logo {
+    height: 80px;
+    float: left;
+    padding-right: 15px;
 }

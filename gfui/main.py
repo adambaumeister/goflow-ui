@@ -35,6 +35,10 @@ def page_setup(template="test.html"):
     p.add_nav_button("/flow", "Flows")
     return p
 
+@app.route('/')
+def index():
+    return flow_search()
+
 @app.route('/flow')
 def flow_search():
     b = backend_from_config(CONFIG_FILE)

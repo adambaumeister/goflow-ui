@@ -4,7 +4,8 @@ class Backend():
     def __init__(self):
         self.required_opts = []
         self.type_map = {
-            "mysql": gfui.backends.Mysql_backend
+            "mysql": gfui.backends.Mysql_backend,
+            "timescaledb": gfui.backends.Timescaledb_backend,
         }
 
     def get(self, backend_type, OPTIONS=None):

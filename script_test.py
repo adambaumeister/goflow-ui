@@ -1,5 +1,3 @@
-from backends import Schema
+from gfui.backends.Timescaledb.timescaledb import *
 
-s = Schema()
-s.add_filter("src 53")
-print(s.build_filter_string())
+b = Timescaledb_backend()
