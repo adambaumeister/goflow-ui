@@ -43,8 +43,7 @@ class Timescaledb_backend(Backend):
         self.schema.limit = limit
         FLOWS = self.schema.flows()
 
-        cursor = db.cursor()
-        cursor.execute(FLOWS)
+        cursor = self.schema.query(db, FLOWS)
         r = cursor.fetchall()
         t = Table()
         t = t.table_from_rows(r, self.schema.column_order)
@@ -55,8 +54,7 @@ class Timescaledb_backend(Backend):
         self.schema.limit = limit
         FLOWS_PER_IP = self.schema.topn_sum(field, sum_by)
 
-        cursor = db.cursor()
-        cursor.execute(FLOWS_PER_IP)
+        cursor = self.schema.query(db, FLOWS_PER_IP)
         r = cursor.fetchall()
         g = Graph()
         g.name = "TopN {0}".format(field)
@@ -88,9 +86,9 @@ class Column:
 
     def filter(self, value, op=None):
         if self.filter_string:
-            self.filter_string = self.filter_string + "AND {2} {0} \"{1}\"".format(op, value, self.name)
+            self.filter_string = self.filter_string + "{1} {0} %s".format(op, self.name)
         else:
-            self.filter_string = "{2} {0} \"{1}\"".format(op, value, self.name)
+            self.filter_string = "{1} {0} %s".format(op, self.name)
 
 class IP4Column(Column):
     def __init__(self, name, display_name=None):
@@ -103,9 +101,9 @@ class IP4Column(Column):
     def filter(self, value, op=None):
         s = value.split("/")
         if len(s) > 1:
-            self.filter_string = "({0} << '{1}'".format(self.name, value)
+            self.filter_string = "{0} << %s".format(self.name, value)
         else:
-            self.filter_string = "{0} = '{1}'".format(self.name, value)
+            self.filter_string = "{0} = %s".format(self.name, value)
 
         return self.filter_string
 
@@ -120,13 +118,9 @@ class IP6Column(Column):
     def filter(self, value, op=None):
         s = value.split("/")
         if len(s) > 1:
-            ip = ipaddress.ip_network(value, strict=False)
-            start_ip = ip.network_address
-            end_ip = ip.broadcast_address
-            self.filter_string = "({0} > {1} AND {0} < {2})".format(self.name, int(start_ip), int(end_ip))
+            self.filter_string = "{0} << %s".format(self.name, value)
         else:
-            ip = ipaddress.ip_address(value)
-            self.filter_string = "{0} = {1}".format(self.name, int(ip))
+            self.filter_string = "{0} = %s".format(self.name, value)
 
         return self.filter_string
 
@@ -151,7 +145,7 @@ class PortColumn(Column):
         return "{0}".format(self.name)
 
     def filter(self, value, op=None):
-        self.filter_string = "{0} = {1}".format(self.name, value)
+        self.filter_string = "{0} = %s".format(self.name, value)
         return self.filter_string
 
 class Coalesce:
@@ -207,6 +201,8 @@ class Schema:
         dst_ip_col = IP4Column("dst_ip", "Destination IP")
         dst_ipv6_col = IP6Column("dst_ipv6", "DestinationIPv6")
 
+        self.filter_val_list = []
+
         # Columns
         self.columns = {
             "last_switched": Column("last_switched", "Last Switched"),
@@ -239,6 +235,7 @@ class Schema:
                 m = re.search(regex, value)
                 v = m.group(1)
                 self.columns[column].filter(v, op)
+                self.filter_val_list.append(v)
 
     def build_filter_string(self):
         s = 'WHERE '
@@ -292,3 +289,8 @@ class Schema:
     def query_boilerplate(self, q):
         q = q + """LIMIT {0}""".format(self.limit)
         return q
+
+    def query(self, db, q):
+        cursor = db.cursor()
+        cursor.execute(q, self.filter_val_list)
+        return cursor
