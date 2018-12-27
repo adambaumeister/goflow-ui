@@ -79,6 +79,9 @@ class Column:
         self.display_name = display_name
         self.type = 'text'
         self.filter_string = None
+        # Filter_special allows string substitution when using this column in a Where clause
+        # It should only be used with caution, as poor usage could lead to SQL injection vulnerabilities
+        self.filter_special = False
 
     def get_display_name(self):
         return self.display_name
@@ -96,6 +99,7 @@ class IP4Column(Column):
     def __init__(self, name, display_name=None):
         super().__init__(name, display_name)
         self.type = "ip"
+        self.filter_special = True
 
     def select(self):
         return "inet_ntoa({0})".format(self.name)
@@ -110,13 +114,14 @@ class IP4Column(Column):
         else:
             ip = ipaddress.ip_address(value)
             self.filter_string = "{0} = {1}".format(self.name, int(ip))
-
+        self.filter_special = True
         return self.filter_string
 
 class IP6Column(Column):
     def __init__(self, name, display_name=None):
         super().__init__(name, display_name)
         self.type = "ip6"
+        self.filter_special = True
 
     def select(self):
         return "inet6_ntoa({0})".format(self.name)
@@ -169,6 +174,8 @@ class Coalesce:
         self.columns = columns
         # We assume that the passed columns are of roughly the same type
         self.type = columns[0].type
+        self.filter_special = True
+
         self.column_selects = []
         for c in columns:
             self.column_selects.append(c.select())
@@ -245,7 +252,8 @@ class Schema:
                 m = re.search(regex, value)
                 v = m.group(1)
                 self.columns[column].filter(v, op)
-                self.filter_val_list.append(v)
+                if not self.columns[column].filter_special:
+                    self.filter_val_list.append(v)
 
 
     def build_filter_string(self):
