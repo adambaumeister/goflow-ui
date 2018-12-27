@@ -19,7 +19,10 @@ class Mysql_backend(Backend):
         self.db = mysql.connector.connect(
             host=self.OPTIONS['SQL_SERVER'],
             user=self.OPTIONS['SQL_USERNAME'],
-            passwd=pw
+            passwd=pw,
+            database=self.OPTIONS['SQL_DB']
+
+
         )
 
         self.schema = Schema()
@@ -38,11 +41,9 @@ class Mysql_backend(Backend):
     def flow_table(self, limit=10):
         db = self.db
         self.schema.limit = limit
-        FLOWS = self.schema.flows()
 
-        cursor = db.cursor()
-        cursor.execute("USE testgoflow")
-        cursor.execute(FLOWS)
+        FLOWS = self.schema.flows()
+        cursor = self.schema.query(db, FLOWS)
         r = cursor.fetchall()
         t = Table()
         t = t.table_from_rows(r, self.schema.column_order)
@@ -142,7 +143,7 @@ class IntColumn(Column):
         return "{0}".format(self.name)
 
     def filter(self, value, op=None):
-        self.filter_string = "{0} = {1}".format(self.name, value)
+        self.filter_string = "{0} = %s".format(self.name)
         return self.filter_string
 
 class PortColumn(Column):
@@ -154,7 +155,7 @@ class PortColumn(Column):
         return "{0}".format(self.name)
 
     def filter(self, value, op=None):
-        self.filter_string = "{0} = {1}".format(self.name, value)
+        self.filter_string = "{0} = %s".format(self.name)
         return self.filter_string
 
 class Coalesce:
@@ -185,7 +186,6 @@ class Coalesce:
 
     def filter(self, value, op=None):
         self.filter_string = self.filter_func(value, op)
-        print(self.filter_string)
 
 class Schema:
     """
@@ -210,6 +210,8 @@ class Schema:
         src_ipv6_col = IP6Column("src_ipv6", "Source IPv6")
         dst_ip_col = IP4Column("dst_ip", "Destination IP")
         dst_ipv6_col = IP6Column("dst_ipv6", "DestinationIPv6")
+
+        self.filter_val_list = []
 
         # Columns
         self.columns = {
@@ -243,6 +245,8 @@ class Schema:
                 m = re.search(regex, value)
                 v = m.group(1)
                 self.columns[column].filter(v, op)
+                self.filter_val_list.append(v)
+
 
     def build_filter_string(self):
         s = 'WHERE '
@@ -282,7 +286,6 @@ class Schema:
         q = """
         SELECT {0}, sum({1}) AS c FROM test_goflow_records {2} GROUP BY {3} ORDER BY c DESC
         """.format(self.columns[column].select(), sum_by, self.build_filter_string(), self.columns[column].name)
-        print(q)
         return self.query_boilerplate(q)
 
     def flows(self):
@@ -292,9 +295,17 @@ class Schema:
         q = """
         SELECT {1} FROM goflow_records {0} ORDER BY last_switched DESC
         """.format(self.build_filter_string(), ", ".join(c))
-        print(q)
         return self.query_boilerplate(q)
 
     def query_boilerplate(self, q):
         q = q + """LIMIT {0}""".format(self.limit)
         return q
+
+    def query(self, db, q):
+        cursor = db.cursor()
+        if len(self.filter_val_list) > 0:
+            print(self.filter_val_list)
+            cursor.execute(q, self.filter_val_list)
+        else:
+            cursor.execute(q)
+        return cursor

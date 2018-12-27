@@ -54,8 +54,7 @@ class Timescaledb_backend(Backend):
         self.schema.limit = limit
         FLOWS_PER_IP = self.schema.topn_sum(field, sum_by)
 
-        cursor = db.cursor()
-        cursor.execute(FLOWS_PER_IP)
+        cursor = self.schema.query(db, FLOWS_PER_IP)
         r = cursor.fetchall()
         g = Graph()
         g.name = "TopN {0}".format(field)
@@ -102,9 +101,9 @@ class IP4Column(Column):
     def filter(self, value, op=None):
         s = value.split("/")
         if len(s) > 1:
-            self.filter_string = "({0} << '{1}'".format(self.name, value)
+            self.filter_string = "{0} << %s".format(self.name, value)
         else:
-            self.filter_string = "{0} = '{1}'".format(self.name, value)
+            self.filter_string = "{0} = %s".format(self.name, value)
 
         return self.filter_string
 
@@ -119,13 +118,9 @@ class IP6Column(Column):
     def filter(self, value, op=None):
         s = value.split("/")
         if len(s) > 1:
-            ip = ipaddress.ip_network(value, strict=False)
-            start_ip = ip.network_address
-            end_ip = ip.broadcast_address
-            self.filter_string = "({0} > {1} AND {0} < {2})".format(self.name, int(start_ip), int(end_ip))
+            self.filter_string = "{0} << %s".format(self.name, value)
         else:
-            ip = ipaddress.ip_address(value)
-            self.filter_string = "{0} = {1}".format(self.name, int(ip))
+            self.filter_string = "{0} = %s".format(self.name, value)
 
         return self.filter_string
 
