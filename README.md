@@ -9,6 +9,7 @@ Running this UI requires a working backend. Currently the following backends/fie
 Backend Type | ip source | ip dst | src port | dst port | last_switched
 ----------- | ----------- | ----------- | ----------- | ----------- | -----------
 MySQL | X | X | X |X | X
+Timescaledb | X | X | X |X | X
 
 This software is pre-release.
 
