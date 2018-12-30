@@ -24,6 +24,7 @@ cd goflow-ui
 bin/pip3 install git+https://github.com/adambaumeister/goflow-ui.git
 
 # Configure, the config file ships with the package
+# You may wish to copy this somewhere else, like /etc/goflow-ui so it isn't overwritten by package updates!
 vi lib/python3.5/site-packages/gfui/config.yml
 # Export the required environment variables
 export CONFIG_FILE=lib/python3.5/site-packages/gfui/config.yml

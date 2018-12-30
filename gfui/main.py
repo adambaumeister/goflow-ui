@@ -88,7 +88,7 @@ def topn_sum():
     b.add_filter(op="<", value=end_time.value)
     b.add_filter(op=None, value=search.value)
 
-    g = b.topn_sum_graph(field, sum)
+    g = b.topn_sum_graph(field, sum, limit=topn_max.value)
     chart = g.render()
     form = {
         "select": b.get_columns(),

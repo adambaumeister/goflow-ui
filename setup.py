@@ -8,7 +8,7 @@ DEPENDENCIES = [
 ]
 
 setup(name="gfui",
-      version=0.13,
+      version=0.14,
       description="GoFlow basic user interface",
       author="Adam Baumeister",
       author_email="adam.baumeister@csiro.au",
